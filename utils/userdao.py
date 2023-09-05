@@ -17,8 +17,8 @@ def createUser(user_info):
     #user_info :  name, ID, password, phoneNumber, rent
     conn = getConnection()
     curs = conn.cursor()
-    ok = curs.execute("INSERT INTO User(name, ID, password, phoneNumber, rent) VALUES (%s, %s, %s, %s, %s)", 
-                      (user_info[0], user_info[1], user_info[2], user_info[3], user_info[4]))
+    ok = curs.execute("INSERT INTO User(name, ID, password, phoneNumber) VALUES (%s, %s, %s, %s)", 
+                      (user_info[0], user_info[1], user_info[2], user_info[3]))
     
     conn.commit()
     conn.close()

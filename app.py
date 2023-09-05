@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template, request
 from flask_restful import Resource,reqparse, Api
 import utils.userdao as userdao
 from utils.utils import hash_password
@@ -7,24 +7,34 @@ from utils.utils import hash_password
 
 app = Flask(__name__)
 api = Api(app)
-@app.route('/user', methods=['POST'])
+
+@app.route('/signup')
+def display_user_signup_form():
+    return render_template('signup.html')
+
+
+@app.route('/signup', methods=['POST'])
 def createUser():
     try:
         parser = reqparse.RequestParser()
-        parser.add_argument('name', required=True, type=str, help='name cannot be blank')
-        parser.add_argument('ID', required=True, type=str, help='ID cannot be blank')
-        parser.add_argument('password', required=True, type=str, help='password cannot be blank')
-        parser.add_argument('phoneNumber', required=True, type=str, help='ID cannot be blank')
-        parser.add_argument('rent', required=False, type=str)
+
+        name = request.form.get('name') 
+        ID = request.form.get('ID')
+        password = request.form.get('password')
+        phoneNumber = request.form.get('phoneNumber')
+
+        # password = request.form.get('password'
+        
         args = parser.parse_args()
 
         # if len(data['password']) < 4 or len(data['password']) > 12 :
         #    return { "error" : "비밀번호의 길이를 확인해주세요 (4-12자리)" }, 400
 
 
-        hashed_password = hash_password(str(args['password']))
+        hashed_password = hash_password(str(password))
 
-        user_info = [ str(args['name']) , str(args['ID']) ,hashed_password, str(args['phoneNumber']), str(args['phoneNumber']) ]
+        user_info = [ str(name) , str(ID) , hashed_password, str(phoneNumber) ]
+        
         return userdao.createUser(user_info)
     
     except Exception as e :
@@ -32,11 +42,6 @@ def createUser():
 
 
 
-def create_app():
-    app = Flask(__name__)
-
-    @app.route('/')
-    def hello_world():
-        return 'hello world!'
-
-    return app
+@app.route('/')
+def hello_world():
+    return 'hello world!'
