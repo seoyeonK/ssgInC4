@@ -7,3 +7,14 @@ def hash_password(original_password) :
     password = original_password + salt
     password = pbkdf2_sha256.hash(password)
     return password
+
+def onlyalpha(check):
+    for c in check:
+        val = ord(c)
+        if 65 <= val <= 90:
+            continue
+        elif 97 <= val <= 122:
+            continue
+        else:
+            return False
+    return True

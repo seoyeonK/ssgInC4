@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, flash, url_for
 from flask_restful import Resource,reqparse, Api
 import utils.userdao as userdao
-from utils.utils import hash_password
+import utils.utils as utils
 
 # 회원가입 : https://luvris2.tistory.com/196
 
@@ -38,28 +38,31 @@ def withdrawl():
 def signup_complete():
     return render_template('signup_complete.html')
 
+@app.route('/signup_fail')
+def signup_fail():
+    return render_template('signup_fail.html')
 
 @app.route('/signup', methods=['POST'])
 def createUser():
     try:
         parser = reqparse.RequestParser()
 
-        name = request.form.get('name') 
-        ID = request.form.get('ID')
-        password = request.form.get('password')
-        phoneNumber = request.form.get('phoneNumber')
+        name = str(request.form.get('name'))
+        ID = str(request.form.get('ID'))
+        password = str(request.form.get('password'))
+        phoneNumber = str(request.form.get('phoneNumber'))
 
-        # password = request.form.get('password'
+        password_confirm = str(request.form.get('password_confirm'))
         
         args = parser.parse_args()
 
-        # if len(data['password']) < 4 or len(data['password']) > 12 :
-        #    return { "error" : "비밀번호의 길이를 확인해주세요 (4-12자리)" }, 400
+        if len(ID) < 4 or len(ID) > 16 or not utils.onlyalpha(ID) or not phoneNumber.isdecimal() or not name.isalpha() or password != password_confirm:
+           return redirect(url_for('signup_fail'))
 
 
-        hashed_password = hash_password(str(password))
+        hashed_password = utils.hash_password(str(password))
 
-        user_info = [ str(name) , str(ID) , hashed_password, str(phoneNumber) ]
+        user_info = [ name , ID , hashed_password, phoneNumber ]
         
         a = userdao.createUser(user_info)
 
