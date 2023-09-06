@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, flash, url_for
 from flask_restful import Resource,reqparse, Api
 import utils.userdao as userdao
 import utils.utils as utils
+from flask_cors import CORS
 
 # 회원가입 : https://luvris2.tistory.com/196
 
@@ -9,6 +10,7 @@ app = Flask(__name__)
 api = Api(app)
 app.secret_key = "super secret key"
 
+CORS(app)
 
 @app.route('/')
 def home():
@@ -54,7 +56,7 @@ def createUser():
 
         password_confirm = str(request.form.get('password_confirm'))
         
-        args = parser.parse_args()
+        # args = parser.parse_args()
 
         if len(ID) < 4 or len(ID) > 16 or not utils.onlyalpha(ID) or not phoneNumber.isdecimal() or not name.isalpha() or password != password_confirm:
            return redirect(url_for('signup_fail'))
@@ -72,7 +74,5 @@ def createUser():
         return {'error': str(e)}
 
 
-
-@app.route('/')
-def hello_world():
-    return 'hello world!'
+if __name__ == '__main__':
+    app.run(host = '0.0.0.0', port=80, threaded=True)
